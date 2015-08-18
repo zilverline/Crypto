@@ -49,19 +49,25 @@ extension String {
 	// MARK: - Private
 
 	private var hashData: NSData? {
-		guard let cstr = cStringUsingEncoding(NSUTF8StringEncoding) else { return nil }
-		return NSData(bytes: cstr, length: lengthOfBytesUsingEncoding(NSUTF8StringEncoding))
+    if let cstr = cStringUsingEncoding(NSUTF8StringEncoding) {
+  		return NSData(bytes: cstr, length: lengthOfBytesUsingEncoding(NSUTF8StringEncoding))
+    } else {
+      return nil
+    }
 	}
 
 	private init?(digestData: NSData?, length: Int32) {
-		guard let digestData = digestData else { return nil }
-		var digest = [UInt8](count: Int(length), repeatedValue: 0)
-		digestData.getBytes(&digest, length: Int(length) * sizeof(UInt8))
-
-		var string = ""
-		for i in 0..<length {
-			string += String(format: "%02x", digest[Int(i)])
-		}
-		self.init(string)
+    if let digestData = digestData {
+      var digest = [UInt8](count: Int(length), repeatedValue: 0)
+      digestData.getBytes(&digest, length: Int(length) * sizeof(UInt8))
+      
+      var string = ""
+      for i in 0..<length {
+        string += String(format: "%02x", digest[Int(i)])
+      }
+      self.init(string)
+    } else {
+      return nil
+    }
 	}
 }
